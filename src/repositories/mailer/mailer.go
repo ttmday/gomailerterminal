@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/ttmday/gomailerterminal/src/global/constants/envs"
+	consts "github.com/ttmday/gomailerterminal/src/global/constants"
 	tmpls "github.com/ttmday/gomailerterminal/src/template"
 	"github.com/ttmday/gomailerterminal/src/views"
 )
@@ -40,8 +40,8 @@ func New(mail *Mail, c *MailerAuth) *Mailer {
 		Subject: mail.Subject,
 		Message: mail.Message,
 		Provider: MailerSMTP{
-			SMTPHostname:   envs.SMTP_Hostname,
-			SMTPServername: envs.SMTP_Servername,
+			SMTPHostname:   consts.SMTP_Hostname,
+			SMTPServername: consts.SMTP_Servername,
 		},
 		Auth: MailerAuth{
 			Username: c.Username,
@@ -144,11 +144,11 @@ func getProvider() *MailerSMTP {
 	SMTP_Servername := os.Getenv("SMTP_Servername")
 
 	if SMTP_Hostname == "" {
-		SMTP_Hostname = "smtp.gmail.com"
+		SMTP_Hostname = consts.SMTP_Hostname
 	}
 
 	if SMTP_Servername == "" {
-		SMTP_Servername = "smtp.gmail.com:465"
+		SMTP_Servername = consts.SMTP_Servername
 	}
 
 	return &MailerSMTP{
