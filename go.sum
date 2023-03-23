@@ -1,0 +1,4 @@
+github.com/mbndr/figlet4go v0.0.0-20190224160619-d6cef5b186ea h1:mQncVDBpKkAecPcH2IMGpKUQYhwowlafQbfkz2QFqkc=
+github.com/mbndr/figlet4go v0.0.0-20190224160619-d6cef5b186ea/go.mod h1:QzTGLGoOqLHUBK8/EZ0v4Fa4CdyXmdyRwCHcl0YbeO4=
+github.com/ttmday/go-logger-colorized v1.0.2 h1:TLFvedR0bdelfPdgEM/r+UaoFZbw8VOFZxG57e8aQhI=
+github.com/ttmday/go-logger-colorized v1.0.2/go.mod h1:6wUsEd5cmSUrUPOgTw21894AEFHucADywqMUsNhgung=
