@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+package views
+
+var MailView = `<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -11,4 +13,4 @@
 		<span>{{.Subject}}</span>
 		<p>{{.Message}}</p>
 	</body>
-</html>
+</html>`

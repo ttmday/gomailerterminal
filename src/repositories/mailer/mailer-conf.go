@@ -2,6 +2,7 @@ package mailer
 
 import (
 	"net/mail"
+	"net/smtp"
 )
 
 type MailerAddr = mail.Address
@@ -22,6 +23,13 @@ type MailerDst struct {
 	Subject string
 }
 
+type Mail struct {
+	To      string `json:"to" db:"to"`
+	Subject string `json:"subject" db:"subject"`
+	Message string `json:"message" db:"message"`
+	DstName string `json:"destinationName" db:"destinationName"`
+}
+
 type Mailer struct {
 	DstName  string
 	FromAddr *mail.Address
@@ -32,9 +40,7 @@ type Mailer struct {
 	Auth     MailerAuth
 }
 
-type Mail struct {
-	To      string `json:"to" db:"to"`
-	Subject string `json:"subject" db:"subject"`
-	Message string `json:"message" db:"message"`
-	DstName string `json:"destinationName" db:"destinationName"`
+type MailerStructured struct {
+	Mailer *Mailer
+	Client *smtp.Client
 }
