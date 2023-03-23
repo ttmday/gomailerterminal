@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/ttmday/go-logger-colorized/src/logger"
@@ -15,13 +14,16 @@ func main() {
 	var auth *mailer.MailerAuth
 
 	switch os.Args[1] {
+	case "--help":
+		mailer.Usage()
+		return
 	case "-u":
 		if len(os.Args) >= 5 {
 			username := os.Args[2]
 			password := os.Args[4]
 			auth = mailer.LoadCredentialsFromFlags(username, password)
 		} else {
-			fmt.Println("-u email -p password")
+			mailer.Usage()
 			return
 		}
 	case "-f":
@@ -36,12 +38,33 @@ func main() {
 			auth = a
 		}
 	default:
-		logger.Info().Println("Valores subministrados insuficientes")
+		mailer.Usage()
 		return
 	}
 
-	// m := mailer.New(&mailer.Mail{
+	mail, err := mailer.Init()
 
-	// }, auth)
-	logger.Success().Printf("Credenciales cargadas %v", auth)
+	if err != nil {
+		logger.Error().Panicf("Error en la obtencion de datos: %v", err)
+		return
+	}
+
+	m := mailer.New(mail, auth)
+
+	ms, err := m.CreateMail()
+
+	if err != nil {
+		logger.Error().Panicf("Error en la creación del correo: %v", err)
+		return
+	}
+
+	_, err = ms.SendMail()
+
+	if err != nil {
+		logger.Error().Panicf("Error al enviar correo: %v", err)
+		return
+	}
+
+	logger.Success().Println("Correo enviado.")
+
 }

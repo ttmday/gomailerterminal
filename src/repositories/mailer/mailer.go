@@ -5,14 +5,27 @@ import (
 	"fmt"
 	"html/template"
 	"net/smtp"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/ttmday/gomailerterminal/src/global/constants/envs"
 	tmpls "github.com/ttmday/gomailerterminal/src/templates"
 )
 
 var message = ""
 
-func New(mail Mail, c *MailerAuth) *Mailer {
+func Usage() {
+	fmt.Println("**********************************************************************")
+	fmt.Println("*                                                                    *")
+	fmt.Println("*        1) go run main.go -u email -p password                      *")
+	fmt.Println("*        2) go run main.go -f /path/to/credentials.json              *")
+	fmt.Println("*                                                                    *")
+	fmt.Println("*   {'username': 'mail@example.com', 'password': 'password'}         *")
+	fmt.Println("*                                                                    *")
+	fmt.Println("**********************************************************************")
+}
+
+func New(mail *Mail, c *MailerAuth) *Mailer {
 	return &Mailer{
 		DstName: mail.DstName,
 		FromAddr: &MailerAddr{
@@ -36,7 +49,7 @@ func New(mail Mail, c *MailerAuth) *Mailer {
 	}
 }
 
-func (m *Mailer) CreateMail() (*smtp.Client, error) {
+func (m *Mailer) CreateMail() (*MailerStructured, error) {
 	from := m.FromAddr
 	to := m.ToAddr
 	subject := m.Subject
@@ -49,11 +62,11 @@ func (m *Mailer) CreateMail() (*smtp.Client, error) {
 
 	t := &template.Template{}
 
-	t = tmpls.LoadTemplate("src/templates/mail.html")
+	t = tmpls.LoadTemplate("src/views/mail.html")
 
 	message += tmpls.RenderTemplateByBuf(t, dst)
 
-	provider := getProvider(m.Provider)
+	provider := getProvider()
 
 	m.Provider = *provider
 
@@ -64,40 +77,43 @@ func (m *Mailer) CreateMail() (*smtp.Client, error) {
 		return nil, err
 	}
 
-	return client, nil
+	return &MailerStructured{
+		Client: client,
+		Mailer: m,
+	}, nil
 }
 
-func (m *Mailer) SendMail(client *smtp.Client) error {
-	if err := client.Mail(m.FromAddr.Address); err != nil {
+func (m *MailerStructured) SendMail() (bool, error) {
+	fmt.Printf("FromAddr %s\n", m.Mailer.FromAddr.Address)
+	if err := m.Client.Mail(m.Mailer.FromAddr.Address); err != nil {
 		println("Error sending mail Address from")
-		return err
+		return false, err
 	}
 
-	if err := client.Rcpt(m.ToAddr.Address); err != nil {
+	if err := m.Client.Rcpt(m.Mailer.ToAddr.Address); err != nil {
 		println("Error sending mail Address to")
-		return err
+		return false, err
 	}
 
-	w, err := client.Data()
+	w, err := m.Client.Data()
 	if err != nil {
 		println("Error sending mail")
-		return err
+		return false, err
 	}
 
 	_, err = w.Write([]byte(message))
 
 	if err := w.Close(); err != nil {
 		println("Error sending mail close message")
-		return err
+		return false, err
 	}
 
-	if err := client.Close(); err != nil {
+	if err := m.Client.Close(); err != nil {
 		println("Error sending mail close client")
-		return err
+		return false, err
 	}
 
-	println("Mail sent successfully")
-	return nil
+	return true, nil
 }
 
 func setHeaders(from, to, subject string) map[string]string {
@@ -121,25 +137,12 @@ func generateMessageByHeaders(headers map[string]string) string {
 	return message
 }
 
-func getProvider(provider MailerSMTP) *MailerSMTP {
-	p := &MailerSMTP{
-		SMTPHostname:   "",
-		SMTPServername: "",
+func getProvider() *MailerSMTP {
+	godotenv.Load(".env")
+	return &MailerSMTP{
+		SMTPHostname:   os.Getenv("SMTP_Hostname"),
+		SMTPServername: os.Getenv("SMTP_Servername"),
 	}
-
-	if provider.SMTPHostname == "" {
-		p.SMTPHostname = envs.SMTP_Hostname
-	} else {
-		p.SMTPHostname = provider.SMTPHostname
-	}
-
-	if provider.SMTPServername == "" {
-		p.SMTPServername = envs.SMTP_Servername
-	} else {
-		p.SMTPServername = provider.SMTPServername
-	}
-
-	return p
 }
 
 func generateAuth(auth MailerAuth, host string) smtp.Auth {
@@ -159,7 +162,13 @@ func setConnection(provider *MailerSMTP, auth smtp.Auth) (*smtp.Client, error) {
 
 	client, err := smtp.NewClient(conn, tlsConfig.ServerName)
 
-	client.Auth(auth)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = client.Auth(auth); err != nil {
+		return nil, err
+	}
 
 	return client, nil
 }
