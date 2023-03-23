@@ -139,9 +139,21 @@ func generateMessageByHeaders(headers map[string]string) string {
 
 func getProvider() *MailerSMTP {
 	godotenv.Load(".env")
+
+	SMTP_Hostname := os.Getenv("SMTP_Hostname")
+	SMTP_Servername := os.Getenv("SMTP_Servername")
+
+	if SMTP_Hostname == "" {
+		SMTP_Hostname = "smtp.gmail.com"
+	}
+
+	if SMTP_Servername == "" {
+		SMTP_Servername = "smtp.gmail.com:465"
+	}
+
 	return &MailerSMTP{
-		SMTPHostname:   os.Getenv("SMTP_Hostname"),
-		SMTPServername: os.Getenv("SMTP_Servername"),
+		SMTPHostname:   SMTP_Hostname,
+		SMTPServername: SMTP_Servername,
 	}
 }
 
