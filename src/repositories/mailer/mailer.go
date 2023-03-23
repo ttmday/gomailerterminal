@@ -16,14 +16,14 @@ import (
 var message = ""
 
 func Usage() {
-	fmt.Println("**********************************************************************")
-	fmt.Println("*                                                                    *")
-	fmt.Println("*        1) go run main.go -u email -p password                      *")
-	fmt.Println("*        2) go run main.go -f /path/to/credentials.json              *")
-	fmt.Println("*                                                                    *")
-	fmt.Println("*   {'username': 'mail@example.com', 'password': 'password'}         *")
-	fmt.Println("*                                                                    *")
-	fmt.Println("**********************************************************************")
+	fmt.Println(" **********************************************************************")
+	fmt.Println(" *                                                                    *")
+	fmt.Println(" *        1) gomailer -u email -p password                            *")
+	fmt.Println(" *        2) gomailer -f /path/to/credentials.json                    *")
+	fmt.Println(" *                                                                    *")
+	fmt.Println(" *   {'username': 'mail@example.com', 'password': 'password'}         *")
+	fmt.Println(" *                                                                    *")
+	fmt.Println(" **********************************************************************")
 }
 
 func New(mail *Mail, c *MailerAuth) *Mailer {
