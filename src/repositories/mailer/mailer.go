@@ -9,7 +9,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/ttmday/gomailerterminal/src/global/constants/envs"
-	tmpls "github.com/ttmday/gomailerterminal/src/templates"
+	tmpls "github.com/ttmday/gomailerterminal/src/template"
+	"github.com/ttmday/gomailerterminal/src/views"
 )
 
 var message = ""
@@ -62,7 +63,7 @@ func (m *Mailer) CreateMail() (*MailerStructured, error) {
 
 	t := &template.Template{}
 
-	t = tmpls.LoadTemplate("src/views/mail.html")
+	t = tmpls.ParseView(views.MailView)
 
 	message += tmpls.RenderTemplateByBuf(t, dst)
 

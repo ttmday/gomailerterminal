@@ -5,6 +5,16 @@ import (
 	"html/template"
 )
 
+func ParseView(view string) *template.Template {
+	t, err := template.New("view").Parse(view)
+	if err != nil {
+		println("Error parsing view")
+		panic(err)
+	}
+
+	return t
+}
+
 func LoadTemplate(tmpl string) *template.Template {
 	t, err := template.ParseFiles(tmpl)
 	if err != nil {
