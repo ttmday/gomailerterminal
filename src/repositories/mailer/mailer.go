@@ -84,7 +84,6 @@ func (m *Mailer) CreateMail() (*MailerStructured, error) {
 }
 
 func (m *MailerStructured) SendMail() (bool, error) {
-	fmt.Printf("FromAddr %s\n", m.Mailer.FromAddr.Address)
 	if err := m.Client.Mail(m.Mailer.FromAddr.Address); err != nil {
 		println("Error sending mail Address from")
 		return false, err
