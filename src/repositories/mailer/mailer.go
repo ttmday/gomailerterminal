@@ -3,7 +3,6 @@ package mailer
 import (
 	"crypto/tls"
 	"fmt"
-	"html/template"
 	"net/smtp"
 	"os"
 
@@ -61,11 +60,9 @@ func (m *Mailer) CreateMail() (*MailerStructured, error) {
 
 	headers := setHeaders(from.String(), to.String(), subject)
 
-	t := &template.Template{}
+	t := tmpls.ParseView(views.MailView)
 
-	if m.Html == "" {
-		t = tmpls.ParseView(views.MailView)
-	} else {
+	if m.Html != "" {
 		t = tmpls.ParseView(m.Html)
 	}
 
