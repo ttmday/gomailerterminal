@@ -12,7 +12,7 @@ import (
 	"github.com/ttmday/gomailerterminal/src/views"
 )
 
-var message = ""
+var _message = ""
 
 func Usage() {
 	fmt.Println(" ************************************************************************")
@@ -66,9 +66,9 @@ func (m *Mailer) CreateMail() (*MailerStructured, error) {
 		t = tmpls.ParseView(m.Html)
 	}
 
-	message = generateMessageByHeaders(headers)
+	_message = generateMessageByHeaders(headers)
 
-	message += tmpls.RenderTemplateByBuf(t, dst)
+	_message += tmpls.RenderTemplateByBuf(t, dst)
 
 	provider := getProvider()
 
@@ -104,7 +104,7 @@ func (m *MailerStructured) SendMail() (bool, error) {
 		return false, err
 	}
 
-	_, err = w.Write([]byte(message))
+	_, err = w.Write([]byte(_message))
 
 	if err := w.Close(); err != nil {
 		println("Error sending mail close message")
