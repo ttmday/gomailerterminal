@@ -9,21 +9,22 @@ import (
 
 	"github.com/joho/godotenv"
 	consts "github.com/ttmday/gomailerterminal/src/global/constants"
-	tmpls "github.com/ttmday/gomailerterminal/src/template"
+	tmpls "github.com/ttmday/gomailerterminal/src/internal/template"
 	"github.com/ttmday/gomailerterminal/src/views"
 )
 
 var message = ""
 
 func Usage() {
-	fmt.Println(" **********************************************************************")
-	fmt.Println(" *                                                                    *")
-	fmt.Println(" *        1) gomailer -u email -p password                            *")
-	fmt.Println(" *        2) gomailer -f /path/to/credentials.json                    *")
-	fmt.Println(" *                                                                    *")
-	fmt.Println(" *   {'username': 'mail@example.com', 'password': 'password'}         *")
-	fmt.Println(" *                                                                    *")
-	fmt.Println(" **********************************************************************")
+	fmt.Println(" ************************************************************************")
+	fmt.Println(" *                                                                      *")
+	fmt.Println(" *       1) gomailer -u email -p password                               *")
+	fmt.Println(" *       3) gomailer -u email -p password --html /path/to/email.html    *")
+	fmt.Println(" *       2) gomailer -f /path/to/credentials.json                       *")
+	fmt.Println(" *                                                                      *")
+	fmt.Println(" *   {'username': 'mail@example.com', 'password': 'password'}           *")
+	fmt.Println(" *                                                                      *")
+	fmt.Println(" ************************************************************************")
 }
 
 func New(mail *Mail, c *MailerAuth) *Mailer {
@@ -39,6 +40,7 @@ func New(mail *Mail, c *MailerAuth) *Mailer {
 		},
 		Subject: mail.Subject,
 		Message: mail.Message,
+		Html:    mail.Html,
 		Provider: MailerSMTP{
 			SMTPHostname:   consts.SMTP_Hostname,
 			SMTPServername: consts.SMTP_Servername,
@@ -59,11 +61,15 @@ func (m *Mailer) CreateMail() (*MailerStructured, error) {
 
 	headers := setHeaders(from.String(), to.String(), subject)
 
-	message = generateMessageByHeaders(headers)
-
 	t := &template.Template{}
 
-	t = tmpls.ParseView(views.MailView)
+	if m.Html == "" {
+		t = tmpls.ParseView(views.MailView)
+	} else {
+		t = tmpls.ParseView(m.Html)
+	}
+
+	message = generateMessageByHeaders(headers)
 
 	message += tmpls.RenderTemplateByBuf(t, dst)
 

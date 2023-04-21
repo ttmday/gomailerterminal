@@ -28,6 +28,7 @@ type Mail struct {
 	Subject string `json:"subject" db:"subject"`
 	Message string `json:"message" db:"message"`
 	DstName string `json:"destinationName" db:"destinationName"`
+	Html    string `json:"html" db:"html"`
 }
 
 type Mailer struct {
@@ -38,6 +39,7 @@ type Mailer struct {
 	Message  string
 	Provider MailerSMTP
 	Auth     MailerAuth
+	Html     string
 }
 
 type MailerStructured struct {

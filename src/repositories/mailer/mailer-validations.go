@@ -22,8 +22,7 @@ func (mail *Mail) IsFiledsEmpty() bool {
 	return false
 }
 
-func (mail *Mail) IsToAEmail() bool {
+func IsToAEmail(to string) bool {
 	r := regexp.MustCompile("^[a-z0-9._%+\\-]+@[a-z.\\-]+\\.[a-z]{2,4}$")
-	println(mail.To, "is valid", r.MatchString(mail.To))
-	return r.MatchString(mail.To)
+	return r.MatchString(to)
 }

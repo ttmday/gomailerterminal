@@ -5,10 +5,9 @@ import (
 	"strings"
 
 	"github.com/manifoldco/promptui"
-	"github.com/ttmday/gomailerterminal/src/global/helpers"
 )
 
-func Init() (*Mail, error) {
+func Init(html string) (*Mail, error) {
 
 	to, err := promptTo()
 	if err != nil {
@@ -25,9 +24,12 @@ func Init() (*Mail, error) {
 		return nil, err
 	}
 
-	message, err := promptMessage()
-	if err != nil {
-		return nil, err
+	message := ""
+	if html == "" {
+		message, err = promptMessage()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &Mail{
@@ -35,6 +37,7 @@ func Init() (*Mail, error) {
 		DstName: strings.TrimSpace(dstName),
 		Subject: strings.TrimSpace(subject),
 		Message: strings.TrimSpace(message),
+		Html:    html,
 	}, nil
 }
 
@@ -42,7 +45,7 @@ func promptTo() (string, error) {
 	prompt := promptui.Prompt{
 		Label: "Para",
 		Validate: func(s string) error {
-			if helpers.IsAEmail(s) == false {
+			if IsToAEmail(s) == false {
 				return errors.New("El valor debe ser un correo eléctronico válido.")
 			}
 
